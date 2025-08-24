@@ -28,7 +28,7 @@ This repository is designed for:
 
 ## Table of Contents
 
-I work on this project in my free time between my day job, personal research, staying current with papers, and contributing to open source. Progress will be steady but unhurried. Here is the list of things we will cover:
+I work on this project in my free time between my day job, personal research, annotating new research papers, and contributing to open source. Expect slow to very-slow progress. Here is the list of things we will cover:
 
 ### Core Concepts
 - [ ] **When to Follow These Patterns**
