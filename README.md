@@ -54,10 +54,9 @@ I work on this project in my free time between my day job, personal research, an
 ## Complementary Resources
 
 This repository works best alongside:
-- [JAX Scaling Guide](https://jax.readthedocs.io/en/latest/distributed_arrays_and_automatic_parallelization.html)
+- [JAX Scaling Book](https://jax-ml.github.io/scaling-book)
 - [JAX Documentation](https://jax.readthedocs.io/)
-- [XLA Performance Guide](https://www.tensorflow.org/xla/performance)
-
+- [UvA Deep Learning Tutorials](https://uvadlc-notebooks.readthedocs.io/en/latest/index.html)
 
 ## Contributing
 
