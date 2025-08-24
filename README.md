@@ -75,5 +75,3 @@ This is an **advanced** resource. We assume familiarity with:
 - Neural network architectures
 - Production ML workflows
 ---
-
-*Ready to master JAX at scale? Let's build something incredible together! 🎉*
