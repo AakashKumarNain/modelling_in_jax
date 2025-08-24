@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "jax>=0.7.1",
     "jaxlib>=0.7.1",
+    "pre-commit>=4.3.0",
     "rich>=14.1.0",
     "ruff>=0.12.10",
 ]
@@ -54,7 +55,7 @@ indent-width = 4
 select = ["E4", "E7", "E9", "F"]
 ignore = []
 
-Ignore `E402` (import violations) in all `__init__.py` files, and in selected subdirectories.
+# Ignore `E402` (import violations) in all `__init__.py` files, and in selected subdirectories.
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["E402"]
 "**/{tests,docs,tools}/*" = ["E402"]
