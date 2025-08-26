@@ -3,14 +3,14 @@ repos:
     rev: v0.12.10
     hooks:
       - id: ruff
-        args: [--config, pyproject.toml, --fix, .]
+        args: [--config, pyproject.toml, --fix]
         stages: [pre-commit]
       - id: ruff-format
-        args: [--config, pyproject.toml, .]
+        args: [--config, pyproject.toml]
         stages: [pre-commit]
       - id: ruff
-        args: [--config, pyproject.toml, .]
+        args: [--config, pyproject.toml]
         stages: [manual]
       - id: ruff-format
-        args: ["--check", --config, pyproject.toml, .]
+        args: ["--check", --config, pyproject.toml]
         stages: [manual]
