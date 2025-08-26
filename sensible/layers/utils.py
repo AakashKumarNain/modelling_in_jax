@@ -28,8 +28,10 @@ def jax_pytree_struct(cls):
     all_fields = tuple(f for f in dataclasses.fields(cls) if f.init)
 
     # 2. Partition the field names into meta and data
-    meta_fields = tuple(f.name for f in all_fields if f.metadata.get('static', False))
-    data_fields = tuple(f.name for f in all_fields if not f.metadata.get('static', False))
+    meta_fields = tuple(f.name for f in all_fields if f.metadata.get("static", False))
+    data_fields = tuple(
+        f.name for f in all_fields if not f.metadata.get("static", False)
+    )
 
     return jtu.register_dataclass(cls, data_fields=data_fields, meta_fields=meta_fields)
 
@@ -47,11 +49,15 @@ def logical_to_physical(logical: Axes, rules) -> jax.sharding.PartitionSpec:
     spec = [getattr(rules, axis) if axis is not None else None for axis in logical]
     flat_axes = jax.tree.leaves(spec)
     if len(set(flat_axes)) != len(flat_axes):
-        raise ValueError(f"Colliding physical axes from translating logical spec {logical} -> {spec}")
+        raise ValueError(
+            f"Colliding physical axes from translating logical spec {logical} -> {spec}"
+        )
     return P(*spec)
 
 
-def logical_to_sharding(logical: Axes, mesh: jax.sharding.Mesh, rules) -> jax.sharding.Sharding:
+def logical_to_sharding(
+    logical: Axes, mesh: jax.sharding.Mesh, rules
+) -> jax.sharding.Sharding:
     """Returns the sharding for a given sequence of logical array dimensions (i.e. the logical shape of an array)."""
     assert mesh is not None
     return NamedSharding(mesh, logical_to_physical(logical, rules))
@@ -82,14 +88,14 @@ def format_repr(obj, max_width: int = 80, _indent: int = 0) -> str:
         return f"{cls_name}(\n{inner}\n{indent_str})"
 
 
-
 @dataclasses.dataclass(frozen=True)
 class ParamSpec:
     shape: Tuple[int, ...] = dataclasses.field(metadata=dict(static=True))
     dtype: jnp.dtype = dataclasses.field(default=jnp.float32)
     logical_axes: Axes = dataclasses.field(metadata=dict(static=True))
-    initializer: Callable | None = dataclasses.field(default=None, metadata=dict(static=True))
-
+    initializer: Callable | None = dataclasses.field(
+        default=None, metadata=dict(static=True)
+    )
 
 
 @partial(jax.jit, static_argnames=("specs", "shardings"))
@@ -112,7 +118,6 @@ def _initialize_parameter_leaves(key, specs, shardings):
 
     @partial(jax.jit, out_shardings=shardings)
     def _init_fn(key: jax.random.PRNGKey):
-
         num_leaves = len(jax.tree.leaves(specs, is_leaf=is_param_spec))
         key_iter = iter(random.split(key, num_leaves))
 
@@ -121,7 +126,7 @@ def _initialize_parameter_leaves(key, specs, shardings):
         return jax.tree.map(
             lambda spec: spec.initializer(next(key_iter), spec.shape, spec.dtype),
             specs,
-            is_leaf=is_param_spec
+            is_leaf=is_param_spec,
         )
 
     return _init_fn(key)
@@ -131,7 +136,7 @@ class ParamInitializer:
     """A base class that provides a factory method (`init`) for initializing
     a PyTree of parameters based on their specifications.
     """
-    
+
     @classmethod
     def param_specs(cls, *args, **kwargs):
         """
@@ -165,7 +170,9 @@ class ParamInitializer:
         shardings_leaves = jax.tree.leaves(shardings, is_leaf=is_param_spec)
 
         # Call the external JIT-compiled function to initialize arrays.
-        initialized_leaves = _initialize_parameter_leaves(key, tuple(spec_leaves), tuple(shardings_leaves))
+        initialized_leaves = _initialize_parameter_leaves(
+            key, tuple(spec_leaves), tuple(shardings_leaves)
+        )
 
         # Reconstruct the original PyTree structure with the new initialized arrays.
         return jax.tree.unflatten(spec_treedef, initialized_leaves)
