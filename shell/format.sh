@@ -7,7 +7,8 @@ then
     exit 1
 fi
 
-base_dir=$(dirname $(dirname $0))
+base_dir="$(dirname "$(dirname "$0")")"
+cd "$base_dir"
 
-echo "Formatting all files..."
+echo "Formatting all files in $(pwd)..."
 pre-commit run --all-files
