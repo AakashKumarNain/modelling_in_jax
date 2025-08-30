@@ -22,7 +22,7 @@ class Linear(ParamInitializer):
     )
 
     @classmethod
-    def param_specs(
+    def _param_specs(
         cls,
         cfg,
         in_features,

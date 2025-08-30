@@ -138,7 +138,7 @@ class ParamInitializer:
     """
 
     @classmethod
-    def param_specs(cls, *args, **kwargs):
+    def _param_specs(cls, *args, **kwargs):
         """
         Defines the specifications (ParamSpec) for all parameters in the PyTree.
         This method must be implemented by any subclass.
