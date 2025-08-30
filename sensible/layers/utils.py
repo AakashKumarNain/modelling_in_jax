@@ -63,6 +63,20 @@ def logical_to_sharding(
     return NamedSharding(mesh, logical_to_physical(logical, rules))
 
 
+def get_partition_spec_from_layers(tree):
+    """Extract PartitionSpec tree from parameters' existing sharding information."""
+    def extract_spec(x):
+        if x is None:
+            return None
+        elif hasattr(x, 'sharding') and hasattr(x.sharding, 'spec'):
+            return x.sharding.spec
+        elif hasattr(x, 'shape'):
+            return P()
+        else:
+            return None
+    return jtu.tree_map(extract_spec, tree, is_leaf=lambda x: x is None)
+
+
 def format_repr(obj, max_width: int = 80, _indent: int = 0) -> str:
     """Pretty repr for layers"""
     cls_name = obj.__class__.__name__
