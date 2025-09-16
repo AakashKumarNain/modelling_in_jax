@@ -112,7 +112,6 @@ class ParamSpec:
     )
 
 
-@partial(jax.jit, static_argnames=("specs", "shardings"))
 def _initialize_parameter_leaves(key, specs, shardings):
     """
     JIT compiled function to initialize the leaf nodes (the actual arrays) of a parameter PyTree.
