@@ -65,15 +65,17 @@ def logical_to_sharding(
 
 def get_partition_spec_from_layers(tree):
     """Extract PartitionSpec tree from parameters' existing sharding information."""
+
     def extract_spec(x):
         if x is None:
             return None
-        elif hasattr(x, 'sharding') and hasattr(x.sharding, 'spec'):
+        elif hasattr(x, "sharding") and hasattr(x.sharding, "spec"):
             return x.sharding.spec
-        elif hasattr(x, 'shape'):
+        elif hasattr(x, "shape"):
             return P()
         else:
             return None
+
     return jtu.tree_map(extract_spec, tree, is_leaf=lambda x: x is None)
 
 
