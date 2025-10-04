@@ -2,6 +2,7 @@ import dataclasses
 from typing import Tuple
 
 import jax
+import jax.numpy as jnp
 
 from .utils import ParamSpec, ParamInitializer
 from .utils import jax_pytree_struct, layer_repr, kernel_init
