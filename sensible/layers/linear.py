@@ -4,7 +4,7 @@ from typing import Tuple
 import jax
 
 from .utils import ParamSpec, ParamInitializer
-from .utils import jax_pytree_struct, layer_repr
+from .utils import jax_pytree_struct, layer_repr, kernel_init
 
 
 @jax_pytree_struct
