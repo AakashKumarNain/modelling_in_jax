@@ -2,10 +2,11 @@ import dataclasses
 from typing import Tuple
 
 import jax
+import jax.numpy as jnp
 # Ensure to use the right pallas kernel depending on the accelerator type
 
 from .utils import ParamSpec, ParamInitializer
-from .utils import jax_pytree_struct, format_repr
+from .utils import jax_pytree_struct, layer_repr
 
 
 @jax_pytree_struct
@@ -29,24 +30,24 @@ class RMSNorm(ParamInitializer):
     )
 
     @classmethod
-    def _param_specs(
+    def param_specs(
         cls,
-        cfg,
         shape,
         eps=1e-5,
         affine=True,
+        dtype=jnp.float32,
         weight_logical_axes=(None,),
         bias_logical_axes=(None,),
     ):
         weight = ParamSpec(
             shape=shape,
-            dtype=cfg.dtype,
+            dtype=dtype,
             logical_axes=weight_logical_axes,
             initializer=jax.nn.initializers.constant(1.0),
         )
         bias = ParamSpec(
             shape=shape,
-            dtype=cfg.dtype,
+            dtype=dtype,
             logical_axes=bias_logical_axes,
             initializer=jax.nn.initializers.constant(0.0),
         )
@@ -65,9 +66,9 @@ class RMSNorm(ParamInitializer):
         key,
         cfg,
         shape,
-        *,
         affine=False,
         eps=1e-5,
+        dtype=jnp.float32,
         weight_logical_axes=(None,),
         bias_logical_axes=(None,),
     ):
@@ -77,12 +78,13 @@ class RMSNorm(ParamInitializer):
             shape,
             eps=eps,
             affine=affine,
+            dtype=dtype,
             weight_logical_axes=weight_logical_axes,
             bias_logical_axes=bias_logical_axes,
         )
 
     def __repr__(self):
-        return format_repr(self)
+        return layer_repr(self)
 
 
 ## Nuances to be taken care of with pallas rmsnorm kernel
