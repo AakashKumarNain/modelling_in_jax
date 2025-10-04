@@ -79,7 +79,7 @@ def get_partition_spec_from_layers(tree):
     return jtu.tree_map(extract_spec, tree, is_leaf=lambda x: x is None)
 
 
-def format_repr(obj, max_width: int = 80, _indent: int = 0) -> str:
+def layer_repr(obj, max_width: int = 80, _indent: int = 0) -> str:
     """Pretty repr for layers"""
     cls_name = obj.__class__.__name__
     indent_str = " " * _indent
@@ -91,7 +91,7 @@ def format_repr(obj, max_width: int = 80, _indent: int = 0) -> str:
         if isinstance(x, jax.Array):
             return f"{x.dtype.name}[{','.join(map(str, x.shape))}]"
         if hasattr(x, "__dict__"):  # nested custom object
-            return format_repr(x, max_width=max_width, _indent=_indent + 4)
+            return layer_repr(x, max_width=max_width, _indent=_indent + 4)
         return repr(x)
 
     parts = [f"{k}={arr_repr(v)}" for k, v in obj.__dict__.items()]
@@ -107,8 +107,8 @@ def format_repr(obj, max_width: int = 80, _indent: int = 0) -> str:
 @dataclasses.dataclass(frozen=True)
 class ParamSpec:
     shape: Tuple[int, ...] = dataclasses.field(metadata=dict(static=True))
-    dtype: jnp.dtype = dataclasses.field(default=jnp.float32)
     logical_axes: Axes = dataclasses.field(metadata=dict(static=True))
+    dtype: jnp.dtype = dataclasses.field(default=jnp.float32)
     initializer: Callable | None = dataclasses.field(
         default=None, metadata=dict(static=True)
     )
@@ -153,7 +153,7 @@ class ParamInitializer:
     """
 
     @classmethod
-    def _param_specs(cls, *args, **kwargs):
+    def param_specs(cls, *args, **kwargs):
         """
         Defines the specifications (ParamSpec) for all parameters in the PyTree.
         This method must be implemented by any subclass.
@@ -171,7 +171,7 @@ class ParamInitializer:
         """
 
         # Get the PyTree of parameter specifications.
-        specs = cls._param_specs(cfg, *args, **kwargs)
+        specs = cls.param_specs(*args, **kwargs)
 
         # Create a parallel PyTree of sharding objects from the specs.
         shardings = jax.tree.map(
@@ -191,3 +191,11 @@ class ParamInitializer:
 
         # Reconstruct the original PyTree structure with the new initialized arrays.
         return jax.tree.unflatten(spec_treedef, initialized_leaves)
+
+
+def kernel_init(*out_axes):
+    return jax.nn.initializers.he_normal(in_axis=0, out_axis=out_axes)
+
+
+def einsum(subscripts: str, lhs: jax.Array, rhs: jax.Array, out_sharding: P | None = None):
+    return jnp.einsum(subscripts, lhs, rhs, out_sharding=out_sharding)
