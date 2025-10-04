@@ -4,7 +4,7 @@ from typing import Tuple
 import jax
 
 from .utils import ParamSpec, ParamInitializer
-from .utils import jax_pytree_struct, format_repr
+from .utils import jax_pytree_struct, layer_repr
 
 
 @jax_pytree_struct
@@ -22,28 +22,25 @@ class Linear(ParamInitializer):
     )
 
     @classmethod
-    def _param_specs(
+    def param_specs(
         cls,
-        cfg,
         in_features,
         out_features,
         use_bias=False,
+        dtype=jnp.float32,
         weight_logical_axes=(None, None),
         bias_logical_axes=(None,),
     ):
-        def kernel_init(*out_axes):
-            return jax.nn.initializers.he_normal(in_axis=0, out_axis=out_axes)
-
         weight = ParamSpec(
             shape=(in_features, out_features),
-            dtype=cfg.dtype,
+            dtype=dtype,
             logical_axes=weight_logical_axes,
             initializer=kernel_init(1),
         )
         if use_bias:
             bias = ParamSpec(
                 shape=(out_features,),
-                dtype=cfg.dtype,
+                dtype=dtype,
                 logical_axes=bias_logical_axes,
                 initializer=jax.nn.initializers.zeros,
             )
@@ -66,10 +63,10 @@ class Linear(ParamInitializer):
         cfg,
         in_features,
         out_features,
-        *,
         use_bias=False,
-        weight_logical_axes=("linear_in", "linear_out"),
-        bias_logical_axes=("linear_out",),
+        dtype=jnp.float32,
+        weight_logical_axes=(None, None),
+        bias_logical_axes=(None,),
     ):
         return cls._init_fn(
             key,
@@ -77,9 +74,10 @@ class Linear(ParamInitializer):
             in_features,
             out_features,
             use_bias=use_bias,
+            dtype=dtype,
             weight_logical_axes=weight_logical_axes,
             bias_logical_axes=bias_logical_axes,
         )
 
     def __repr__(self):
-        return format_repr(self)
+        return layer_repr(self)
