@@ -171,7 +171,7 @@ class ParamInitializer:
         """
 
         # Get the PyTree of parameter specifications.
-        specs = cls.param_specs(cfg, *args, **kwargs)
+        specs = cls._param_specs(cfg, *args, **kwargs)
 
         # Create a parallel PyTree of sharding objects from the specs.
         shardings = jax.tree.map(
