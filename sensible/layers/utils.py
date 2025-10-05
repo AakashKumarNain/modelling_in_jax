@@ -197,5 +197,5 @@ def kernel_init(*out_axes):
     return jax.nn.initializers.he_normal(in_axis=0, out_axis=out_axes)
 
 
-def einsum(subscripts: str, lhs: jax.Array, rhs: jax.Array, out_sharding: P | None = None):  # noqa
+def einsum(subscripts: str, lhs: jax.Array, rhs: jax.Array, out_sharding: P | None = None):  # fmt: skip
     return jnp.einsum(subscripts, lhs, rhs, out_sharding=out_sharding)
