@@ -38,7 +38,8 @@ class Embedding(ParamInitializer):
         )
 
     @classmethod
-    def init(cls,
+    def init(
+        cls,
         key,
         cfg,
         vocab_size,
