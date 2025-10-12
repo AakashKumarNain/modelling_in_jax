@@ -14,18 +14,28 @@ class MultiHeadAttention(ParamInitializer):
     num_heads: int = dataclasses.field(metadata=dict(static=True))
     wqkv: jax.Array | ParamSpec
     wo: jax.Array | ParamSpec
-    wqkv_logical_axes: Tuple[str, str] = dataclasses.field(default=(None, None), metadata=dict(static=True))
-    wo_logical_axes: Tuple[str, str] = dataclasses.field(default=(None, None), metadata=dict(static=True))
+    wqkv_logical_axes: Tuple[str, str] = dataclasses.field(
+        default=(None, None), metadata=dict(static=True)
+    )
+    wo_logical_axes: Tuple[str, str] = dataclasses.field(
+        default=(None, None), metadata=dict(static=True)
+    )
 
     @classmethod
     def param_specs(
         cls,
-        d_in, d_out, num_heads,
+        d_in,
+        d_out,
+        num_heads,
         dtype=jnp.float32,
-        wqkv_initializer=None, wo_initializer=None,
-        wqkv_logical_axes=(None, None), wo_logical_axes=(None, None)
+        wqkv_initializer=None,
+        wo_initializer=None,
+        wqkv_logical_axes=(None, None),
+        wo_logical_axes=(None, None),
     ):
-        assert d_out % num_heads == 0, "Output dimensions must be a multiplier of num_heads"
+        assert d_out % num_heads == 0, (
+            "Output dimensions must be a multiplier of num_heads"
+        )
 
         wqkv = ParamSpec(
             shape=(d_in, 3 * d_out),
@@ -47,25 +57,39 @@ class MultiHeadAttention(ParamInitializer):
             wqkv=wqkv,
             wo=wo,
             wqkv_logical_axes=wqkv_logical_axes,
-            wo_logical_axes=wo_logical_axes
+            wo_logical_axes=wo_logical_axes,
         )
 
     @classmethod
     def init(
-        cls, key, cfg,
-        d_in, d_out, num_heads,
+        cls,
+        key,
+        cfg,
+        d_in,
+        d_out,
+        num_heads,
         dtype=jnp.float32,
-        wqkv_initializer=None, wo_initializer=None,
-        wqkv_logical_axes=(None, None), wo_logical_axes=(None, None)):
+        wqkv_initializer=None,
+        wo_initializer=None,
+        wqkv_logical_axes=(None, None),
+        wo_logical_axes=(None, None),
+    ):
         return cls._init_fn(
-            key, cfg,
-            d_in=d_in, d_out=d_out, num_heads=num_heads,
+            key,
+            cfg,
+            d_in=d_in,
+            d_out=d_out,
+            num_heads=num_heads,
             dtype=dtype,
-            wqkv_initializer=wqkv_initializer, wo_initializer=wo_initializer,
-            wqkv_logical_axes=wqkv_logical_axes, wo_logical_axes=wo_logical_axes,
+            wqkv_initializer=wqkv_initializer,
+            wo_initializer=wo_initializer,
+            wqkv_logical_axes=wqkv_logical_axes,
+            wo_logical_axes=wo_logical_axes,
         )
+
     def __repr__(self):
         return layer_repr(self)
+
 
 @jax_pytree_struct
 class GroupedQueryAttention(ParamInitializer):
