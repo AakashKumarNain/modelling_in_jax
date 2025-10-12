@@ -194,6 +194,7 @@ class ParamInitializer:
 
 
 def kernel_init(*out_axes):
+    "Returns a `he_normal` initializer with given `out_axes`."
     return jax.nn.initializers.he_normal(in_axis=0, out_axis=out_axes)
 
 
